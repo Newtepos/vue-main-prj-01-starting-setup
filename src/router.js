@@ -4,7 +4,7 @@ import CoachRegister from './pages/coaches/CoachRegister.vue';
 import CoachList from './pages/coaches/CoachsList.vue';
 import ContactCoach from './pages/requests/ContactCoach.vue';
 import RequestedRecevied from './pages/requests/RequestsRecevied.vue';
-import NotFound from './pages/NotFound.vue'
+import NotFound from './pages/NotFound.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +14,7 @@ const router = createRouter({
     {
       path: '/coaches/:id',
       component: CoachDetail,
+      props: true,
       children: [{ path: 'contact', component: ContactCoach }],
     },
     { path: '/register', component: CoachRegister },
