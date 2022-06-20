@@ -1,4 +1,7 @@
 <template>
+  <base-dialog :show="!!error" title="Error happened!" @close="handleError">
+    {{ error }}</base-dialog
+  >
   <section>
     <coach-filter @change-filter="setFilters"></coach-filter>
   </section>
@@ -43,6 +46,7 @@ export default {
         career: true,
       },
       isLoading: false,
+      error: null,
     };
   },
   computed: {
@@ -62,22 +66,29 @@ export default {
       });
     },
     hasCoaches() {
-      return  !this.isLoading && this.$store.getters['coaches/hasCoaches'];
+      return !this.isLoading && this.$store.getters['coaches/hasCoaches'];
     },
     isCoaches() {
-      return  this.$store.getters['coaches/isCoach'];
+      return this.$store.getters['coaches/isCoach'];
     },
   },
   created() {
     this.loadCoach();
   },
   methods: {
+    handleError() {
+      this.error = null;
+    },
     setFilters(updatedFilter) {
       this.activeFilter = updatedFilter;
     },
     async loadCoach() {
       this.isLoading = true;
-      await this.$store.dispatch('coaches/loadCoaches');
+      try {
+        await this.$store.dispatch('coaches/loadCoaches');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
+      }
       this.isLoading = false;
     },
   },
