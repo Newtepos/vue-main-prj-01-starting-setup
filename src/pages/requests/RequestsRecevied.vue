@@ -4,6 +4,7 @@
       <header>
         <h2>Requests Received</h2>
       </header>
+      <base-spinner v-if="isLoading"></base-spinner>
       <ul v-if="hasRequests">
         <request-item
           v-for="req in receivedRequest"
@@ -22,6 +23,11 @@
 import RequestItem from '../../components/requests/RequestItem.vue';
 
 export default {
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
   components: { RequestItem },
   computed: {
     receivedRequest() {
@@ -29,6 +35,16 @@ export default {
     },
     hasRequests() {
       return this.$store.getters['request/hasRequests'];
+    },
+  },
+  created() {
+    this.loadMessages();
+  },
+  methods: {
+    async loadMessages() {
+      this.isLoading = true;
+      await this.$store.dispatch('request/loadMessage');
+      this.isLoading = false;
     },
   },
 };
