@@ -30,15 +30,29 @@ const coachesModules = {
     },
   },
   actions: {
-    coachesRegister(context, payload) {
+    async coachesRegister(context, payload) {
+      const coachId = context.rootGetters.userId;
+
       const coacheDetail = {
-        id: context.rootGetters.userId,
         firstName: payload.first,
         lastName: payload.last,
         areas: payload.areas,
         description: payload.desc,
         hourlyRate: payload.rate,
       };
+
+      const response = await fetch(
+        `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/coaches/${coachId}.json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(coacheDetail),
+        }
+      );
+
+      if (!response.ok) {
+        //error handling
+      }
+
       context.commit('addCoach', coacheDetail);
     },
   },
