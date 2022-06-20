@@ -22,6 +22,14 @@ const requestModule = {
       context.commit('addMessages', newRequest);
     },
   },
+  getters: {
+    requests(state) {
+      return state.messages;
+    },
+    hasRequests(state) {
+      return state.messages && state.messages.length > 0;
+    },
+  },
 };
 
-export default requestModule
+export default requestModule;
