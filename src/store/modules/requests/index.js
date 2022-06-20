@@ -23,11 +23,12 @@ const requestModule = {
     },
   },
   getters: {
-    requests(state) {
-      return state.messages;
+    requests(state, _, _2, rootGetters) {
+      const coachId = rootGetters.userId;
+      return state.messages.filter((req) => req.coachID === coachId);
     },
-    hasRequests(state) {
-      return state.messages && state.messages.length > 0;
+    hasRequests(_, getters) {
+      return getters.requests && getters.requests.length > 0;
     },
   },
 };
