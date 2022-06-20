@@ -2,6 +2,7 @@ const coachesModules = {
   namespaced: true,
   state() {
     return {
+      fetchTime: null,
       coaches: [
         {
           id: 'c1',
@@ -31,6 +32,9 @@ const coachesModules = {
     setCoach(state, payload) {
       state.coaches = payload;
     },
+    setFetchTime(state) {
+      state.fetchTime = new Date().getTime();
+    },
   },
   actions: {
     async coachesRegister(context, payload) {
@@ -58,7 +62,11 @@ const coachesModules = {
 
       context.commit('addCoach', coacheDetail);
     },
-    async loadCoaches(context) {
+    async loadCoaches(context, payload) {
+      if (!payload.forceRefresh && !context.getters.shouldUpdateCoach) {
+        return;
+      }
+
       const response = await fetch(
         `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/coaches.json`
       );
@@ -84,6 +92,8 @@ const coachesModules = {
       }
 
       context.commit('setCoach', coaches);
+      console.log('new Fetch');
+      context.commit('setFetchTime');
     },
   },
   getters: {
@@ -97,6 +107,15 @@ const coachesModules = {
       const coaches = getters.coaches;
       const userId = rootGetters.userId;
       return coaches.some((coach) => coach.id === userId);
+    },
+    shouldUpdateCoach(state) {
+      const lastFetchTime = state.fetchTime;
+      if (!lastFetchTime) {
+        return true;
+      }
+      const currentTime = new Date().getTime();
+
+      return (currentTime - lastFetchTime) / 1000 > 60;
     },
   },
 };
