@@ -44,7 +44,7 @@ export default {
         messages: this.messages,
       };
 
-      console.log(newRequest);
+      this.$store.dispatch('request/contactCoach', newRequest)
     },
   },
 };
