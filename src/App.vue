@@ -11,6 +11,9 @@
 import TheHeader from './components/layout/TheHeader.vue';
 export default {
   components: { TheHeader },
+  created() {
+    this.$store.dispatch('tryLogin');
+  },
 };
 </script>
 
@@ -45,7 +48,7 @@ body {
 }
 .route-enter-to,
 .route-leave-leave {
-    opacity: 1;
+  opacity: 1;
   transform: translateY(0);
 }
 </style>
