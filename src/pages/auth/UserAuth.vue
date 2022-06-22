@@ -60,6 +60,14 @@ export default {
       }
 
       //http request
+      if (this.mode === 'login') {
+        //...
+      } else {
+        this.$store.dispatch('signup', {
+          email: this.enteredEmail,
+          password: this.enteredPassword,
+        });
+      }
     },
     switchAuthMode() {
       if (this.mode === 'login') {
