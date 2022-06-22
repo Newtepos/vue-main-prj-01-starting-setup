@@ -1,9 +1,10 @@
+let timer;
 const authModule = {
   state: {
     userId: null,
     apiKey: 'AIzaSyAckKTgB9DqGRx8jYz-oO34OluHApSMexQ',
     token: null,
-    tokenExpriation: null,
+    didAutoLogout: false,
   },
   getters: {
     userId(state) {
@@ -15,12 +16,18 @@ const authModule = {
     isAuthenticated(state) {
       return !!state.token;
     },
+    didAutoLogout(state) {
+      return state.didAutoLogout;
+    },
   },
   mutations: {
     setUser(state, payload) {
       state.token = payload.token;
       state.userId = payload.userId;
-      state.tokenExpriation = payload.tokenExpriation;
+      state.didAutoLogout = false;
+    },
+    setAutoLogout(state) {
+      state.didAutoLogout = true;
     },
   },
   actions: {
@@ -63,35 +70,63 @@ const authModule = {
         throw error;
       }
 
+      //   const expiresIn = responseData.expiresIn * 1000;
+      const expiresIn = 5000;
+      const expirationDate = new Date().getTime() + expiresIn;
+
       localStorage.setItem('token', responseData.idToken);
       localStorage.setItem('userId', responseData.localId);
+      localStorage.setItem('tokenExpiration', expirationDate);
+
+      timer = setTimeout(function () {
+        context.dispatch('autoLogout');
+      }, expiresIn);
 
       context.commit('setUser', {
         token: responseData.idToken,
         userId: responseData.localId,
-        tokenExpriation: responseData.expiresIn,
       });
     },
 
     logout(context) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('tokenExpiration');
+
+      clearTimeout(timer);
+
       context.commit('setUser', {
         token: null,
         userId: null,
-        tokenExpriation: null,
       });
     },
 
     tryLogin(context) {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
+      const tokenExpiration = localStorage.getItem('tokenExpiration');
+
+      const expireIn = tokenExpiration - new Date().getTime();
+
+      if (expireIn < 0) {
+        return;
+      }
+
+      timer = setTimeout(function () {
+        context.dispatch('autoLogout');
+      }, expireIn);
 
       if (token && userId) {
         context.commit('setUser', {
           token: token,
           userId: userId,
-          tokenExpriation: null,
         });
       }
+    },
+
+    autoLogout(context) {
+      context.dispatch('logout');
+      context.commit('setAutoLogout');
     },
   },
 };
