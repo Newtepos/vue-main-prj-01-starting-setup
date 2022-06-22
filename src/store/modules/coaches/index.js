@@ -48,8 +48,11 @@ const coachesModules = {
         hourlyRate: payload.rate,
       };
 
+      const token = context.rootGetters.token;
+
       const response = await fetch(
-        `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/coaches/${coachId}.json`,
+        `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/coaches/${coachId}.json?auth=` +
+          token,
         {
           method: 'PUT',
           body: JSON.stringify(coacheDetail),

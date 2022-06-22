@@ -44,9 +44,11 @@ const requestModule = {
     },
     async loadMessage(context) {
       const coachId = context.rootState.userId;
+      const token = context.rootGetters.token;
 
       const response = await fetch(
-        `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/messages/${coachId}.json`
+        `https://vue-http-demo-869d8-default-rtdb.asia-southeast1.firebasedatabase.app/messages/${coachId}.json?auth=` +
+          token
       );
 
       if (!response.ok) {
